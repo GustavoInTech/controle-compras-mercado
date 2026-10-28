@@ -31,3 +31,10 @@ Princípio do projeto: não armazenar o texto bruto da nota fiscal nem o CPF do 
 ## Autor
 
 Gustavo ([@GustavoInTech](https://github.com/GustavoInTech))
+
+## Documentação
+
+- [Requisitos](docs/01-requisitos.md)
+- [Arquitetura](docs/02-arquitetura.md)
+- [Modelo de dados](docs/03-modelo-de-dados.md)
+- [Decisões de projeto](docs/decisoes/)
