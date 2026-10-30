@@ -1,0 +1,40 @@
+DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETRÔNICA
+
+ACOUGUE E MERC AREAL DE RIO DAS PEDRAS LTDA-ME
+CNPJ: 08.710.596/0001-25
+AV ENGENHEIRO LEONEL DE MOURA BRIZOLA , 58 , AREAL/RIO DAS PEDRAS , JACAREPAGUA , Rio de Janeiro , RJ
+Filtrar itens...
+Beterraba kg (Código: 8885 )
+Qtde.:0,245  UN: KG  Vl. Unit.:   3,99 	Vl. Total
+0,97
+Cebola kg (Código: 8886 )
+Qtde.:0,415  UN: KG  Vl. Unit.:   10,49 	Vl. Total
+4,35
+Cenoura kg (Código: 8888 )
+Qtde.:0,325  UN: KG  Vl. Unit.:   5,99 	Vl. Total
+1,94
+Batata kg (Código: 8884 )
+Qtde.:0,705  UN: KG  Vl. Unit.:   6,99 	Vl. Total
+4,92
+LINGUICA PERNIL CG S.KG (Código: 26743 )
+Qtde.:1,232  UN: KG  Vl. Unit.:   21,99 	Vl. Total
+27,09
+Asa Frango Cg Copavel kg (Código: 8087 )
+Qtde.:1,086  UN: KG  Vl. Unit.:   18,99 	Vl. Total
+20,62
+COSTELA P/CHURRASCO KG (Código: 9189 )
+Qtde.:1,348  UN: KG  Vl. Unit.:   32,49 	Vl. Total
+43,79
+Contr Bovino kg (Código: 8064 )
+Qtde.:1,112  UN: KG  Vl. Unit.:   65,49 	Vl. Total
+72,82
+SACOLA GREEN 40X50 (Código: 21278 )
+Qtde.:2  UN: UN  Vl. Unit.:   0,15 	Vl. Total
+0,30
+Carva Vegetal Itoror 3kg (Código: 6552 )
+Qtde.:1  UN: UN  Vl. Unit.:   20 	Vl. Total
+20,00
+Qtd. total de itens:10
+Valor a pagar R$:196,80
+Forma de pagamento:Valor pago R$:
+Cartão de Crédito196,80
