@@ -34,3 +34,6 @@ build/
 
 ### Segredos locais ###
 .env
+
+# Configurações pessoais do editor
+.vscode/
