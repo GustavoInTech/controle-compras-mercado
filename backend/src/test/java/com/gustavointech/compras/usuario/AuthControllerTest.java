@@ -2,6 +2,8 @@ package com.gustavointech.compras.usuario;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,7 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-// Chama o endpoint de verdade (sem abrir uma porta), com o banco de desenvolvimento.
+// Chama o endpoint de verdade (sem abrir uma porta), passando pelos filtros de segurança.
 @SpringBootTest
 @Transactional
 class AuthControllerTest {
@@ -30,11 +32,12 @@ class AuthControllerTest {
 
     @BeforeEach
     void montar() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(contexto).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(contexto).apply(springSecurity()).build();
     }
 
     private ResultActions cadastrar(String json) throws Exception {
         return mockMvc.perform(post("/api/auth/cadastro")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
     }
