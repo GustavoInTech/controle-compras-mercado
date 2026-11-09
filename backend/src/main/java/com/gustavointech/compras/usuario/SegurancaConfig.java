@@ -14,6 +14,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import jakarta.servlet.DispatcherType;
 
 @Configuration
 public class SegurancaConfig {
@@ -42,6 +43,7 @@ public class SegurancaConfig {
                 http
                                 .authorizeHttpRequests(regras -> regras
                                                 // Rotas abertas; todo o resto exige estar logado
+                                                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                                 .requestMatchers("/api/saude", "/api/auth/cadastro", "/api/auth/login")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
