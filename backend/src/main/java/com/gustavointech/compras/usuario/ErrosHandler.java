@@ -1,8 +1,12 @@
 package com.gustavointech.compras.usuario;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,6 +27,21 @@ public class ErrosHandler {
         ProblemDetail problema = ProblemDetail.forStatusAndDetail(
                 HttpStatus.UNAUTHORIZED, "E-mail ou senha inválidos.");
         problema.setTitle("Não autenticado");
+        return problema;
+    }
+
+    // Pedido com campos inválidos: responde 400 listando só os NOMES dos campos e o
+    // motivo.
+    // Tratar aqui também impede o Spring de registrar no log o valor recusado
+    // (que poderia ser uma senha, ou um texto de nota com CPF).
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail pedidoInvalido(MethodArgumentNotValidException e) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Pedido inválido.");
+        problema.setTitle("Pedido inválido");
+        Map<String, String> campos = new LinkedHashMap<>();
+        e.getBindingResult().getFieldErrors()
+                .forEach(erro -> campos.put(erro.getField(), erro.getDefaultMessage()));
+        problema.setProperty("campos", campos);
         return problema;
     }
 }

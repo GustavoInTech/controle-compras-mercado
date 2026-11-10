@@ -10,6 +10,8 @@ public final class NotaLida {
     private final MercadoLido mercado;
     private final String chaveAcesso;
     private final LocalDate dataEmissao;
+    private final String numero;
+    private final String serie;
     private final List<ItemLido> itens;
     private final Integer quantidadeItensNota;
     private final BigDecimal valorTotal;
@@ -19,18 +21,22 @@ public final class NotaLida {
     private final List<String> avisos;
 
     public NotaLida(MercadoLido mercado,
-            String chaveAcesso,
-            LocalDate dataEmissao,
-            List<ItemLido> itens,
-            Integer quantidadeItensNota,
-            BigDecimal valorTotal,
-            BigDecimal desconto,
-            BigDecimal valorAPagar,
-            List<PagamentoLido> pagamentos,
-            List<String> avisos) {
+                    String chaveAcesso,
+                    LocalDate dataEmissao,
+                    String numero,
+                    String serie,
+                    List<ItemLido> itens,
+                    Integer quantidadeItensNota,
+                    BigDecimal valorTotal,
+                    BigDecimal desconto,
+                    BigDecimal valorAPagar,
+                    List<PagamentoLido> pagamentos,
+                    List<String> avisos) {
         this.mercado = mercado;
         this.chaveAcesso = chaveAcesso;
         this.dataEmissao = dataEmissao;
+        this.numero = numero;
+        this.serie = serie;
         // List.copyOf cria uma cópia que não pode ser alterada; null vira lista vazia
         this.itens = itens == null ? List.of() : List.copyOf(itens);
         this.quantidadeItensNota = quantidadeItensNota;
@@ -51,6 +57,14 @@ public final class NotaLida {
 
     public LocalDate getDataEmissao() {
         return dataEmissao;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public String getSerie() {
+        return serie;
     }
 
     public List<ItemLido> getItens() {
@@ -83,13 +97,13 @@ public final class NotaLida {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof NotaLida that))
-            return false;
+        if (this == o) return true;
+        if (!(o instanceof NotaLida that)) return false;
         return Objects.equals(mercado, that.mercado)
                 && Objects.equals(chaveAcesso, that.chaveAcesso)
                 && Objects.equals(dataEmissao, that.dataEmissao)
+                && Objects.equals(numero, that.numero)
+                && Objects.equals(serie, that.serie)
                 && Objects.equals(itens, that.itens)
                 && Objects.equals(quantidadeItensNota, that.quantidadeItensNota)
                 && Objects.equals(valorTotal, that.valorTotal)
@@ -101,7 +115,7 @@ public final class NotaLida {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mercado, chaveAcesso, dataEmissao, itens, quantidadeItensNota,
+        return Objects.hash(mercado, chaveAcesso, dataEmissao, numero, serie, itens, quantidadeItensNota,
                 valorTotal, desconto, valorAPagar, pagamentos, avisos);
     }
 
@@ -110,6 +124,8 @@ public final class NotaLida {
         return "NotaLida{mercado=" + mercado
                 + ", chaveAcesso=" + chaveAcesso
                 + ", dataEmissao=" + dataEmissao
+                + ", numero=" + numero
+                + ", serie=" + serie
                 + ", itens=" + itens.size()
                 + ", quantidadeItensNota=" + quantidadeItensNota
                 + ", valorTotal=" + valorTotal

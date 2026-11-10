@@ -34,6 +34,7 @@ public class LeitorNfce {
     private static final Pattern VALOR_A_PAGAR = Pattern.compile("Valor a pagar R\\$:\\s*([\\d.,]+)");
     private static final Pattern EMISSAO = Pattern.compile("Emiss[ãa]o:\\s*(\\d{2})/(\\d{2})/(\\d{4})");
     private static final Pattern CHAVE = Pattern.compile("Chave de acesso:\\s*([\\d ]{44,60})");
+    private static final Pattern NUMERO_SERIE = Pattern.compile("Número:\\s*(\\d+)\\s+Série:\\s*(\\d+)");
     private static final Pattern PAGAMENTO = Pattern.compile("^(\\D+?)\\s*([\\d.,]+)$");
 
     public NotaLida ler(String textoBruto) {
@@ -57,7 +58,15 @@ public class LeitorNfce {
 
         conferir(itens, quantidadeItensNota, valorTotal, desconto, valorAPagar, avisos);
 
-        return new NotaLida(mercado, lerChave(texto), lerData(texto), itens, quantidadeItensNota,
+        String numero = null;
+        String serie = null;
+        Matcher ns = NUMERO_SERIE.matcher(texto);
+        if (ns.find()) {
+            numero = ns.group(1);
+            serie = ns.group(2);
+        }
+
+        return new NotaLida(mercado, lerChave(texto), lerData(texto), numero, serie, itens, quantidadeItensNota,
                 valorTotal, desconto, valorAPagar, pagamentos, avisos);
     }
 

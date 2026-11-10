@@ -132,4 +132,16 @@ class LeitorNfceTest {
         assertEquals(10, nota.getItens().size());
         assertTrue(nota.getAvisos().isEmpty(), "não deveria ter avisos: " + nota.getAvisos());
     }
+
+    @Test
+    void leNumeroESerieDaNota() throws IOException {
+        NotaLida computador = leitor.ler(lerArquivo("acougue-computador.txt"));
+        assertEquals("1", computador.getNumero());
+        assertEquals("101", computador.getSerie());
+
+        // Na versão do celular, sem "Informações gerais da Nota", esses campos não vêm
+        NotaLida celular = leitor.ler(lerArquivo("acougue-celular.txt"));
+        assertNull(celular.getNumero());
+        assertNull(celular.getSerie());
+    }
 }
