@@ -25,4 +25,13 @@ public class NotaErrosHandler {
         problema.setTitle("Nota já registrada");
         return problema;
     }
+
+    // Vale para a nota que não existe E para a nota de outro usuário: a resposta é
+    // igual de propósito
+    @ExceptionHandler(NotaNaoEncontradaException.class)
+    public ProblemDetail naoEncontrada(NotaNaoEncontradaException e) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        problema.setTitle("Nota não encontrada");
+        return problema;
+    }
 }
