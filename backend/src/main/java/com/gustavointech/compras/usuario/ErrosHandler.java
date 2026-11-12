@@ -30,6 +30,15 @@ public class ErrosHandler {
         return problema;
     }
 
+    // 403 (e não 401): o usuário ESTÁ logado, só errou a confirmação. Um 401 faria
+    // o frontend achar que a sessão caiu.
+    @ExceptionHandler(SenhaIncorretaException.class)
+    public ProblemDetail senhaIncorreta(SenhaIncorretaException e) {
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.getMessage());
+        problema.setTitle("Senha incorreta");
+        return problema;
+    }
+
     // Pedido com campos inválidos: responde 400 listando só os NOMES dos campos e o
     // motivo.
     // Tratar aqui também impede o Spring de registrar no log o valor recusado
