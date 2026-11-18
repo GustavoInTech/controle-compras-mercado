@@ -3,7 +3,9 @@ package com.gustavointech.compras.nota;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ import com.gustavointech.compras.leitor.MercadoLido;
 import com.gustavointech.compras.leitor.NotaLida;
 import com.gustavointech.compras.mercado.Mercado;
 import com.gustavointech.compras.mercado.MercadoRepository;
+import com.gustavointech.compras.produto.Produto;
+import com.gustavointech.compras.produto.ProdutoApelido;
+import com.gustavointech.compras.produto.ProdutoApelidoRepository;
 import com.gustavointech.compras.usuario.UsuarioRepository;
 
 @Service
@@ -31,11 +36,14 @@ public class SalvarNotaService {
     private final NotaRepository notas;
     private final MercadoRepository mercados;
     private final UsuarioRepository usuarios;
+    private final ProdutoApelidoRepository apelidos;
 
-    public SalvarNotaService(NotaRepository notas, MercadoRepository mercados, UsuarioRepository usuarios) {
+    public SalvarNotaService(NotaRepository notas, MercadoRepository mercados, UsuarioRepository usuarios,
+            ProdutoApelidoRepository apelidos) {
         this.notas = notas;
         this.mercados = mercados;
         this.usuarios = usuarios;
+        this.apelidos = apelidos;
     }
 
     // Lê o texto DE NOVO (não confia no que o navegador devolveria), confere tudo e
@@ -73,9 +81,19 @@ public class SalvarNotaService {
 
         Nota nota = new Nota(usuarios.getReferenceById(usuarioId), mercado, identificador, chave, data,
                 valorTotal, lida.getDesconto(), lida.getValorAPagar());
+
+        // ADR 0005: liga sozinho os itens cujo nome o usuário já confirmou nesta loja;
+        // o resto fica "para revisar"
+        Map<String, Produto> conhecidos = new HashMap<>();
+        for (ProdutoApelido apelido : apelidos.findByUsuarioIdAndMercadoId(usuarioId, mercado.getId())) {
+            conhecidos.put(apelido.getNomeNormalizado(), apelido.getProduto());
+        }
+
         for (ItemLido item : lida.getItens()) {
-            nota.adicionarItem(new ItemNota(item.getNome(), item.getNomeNormalizado(), item.getCodigo(),
-                    item.getQuantidade(), item.getUnidade(), item.getPrecoUnitario(), item.getTotal()));
+            ItemNota novo = new ItemNota(item.getNome(), item.getNomeNormalizado(), item.getCodigo(),
+                    item.getQuantidade(), item.getUnidade(), item.getPrecoUnitario(), item.getTotal());
+            novo.definirProduto(conhecidos.get(item.getNomeNormalizado()));
+            nota.adicionarItem(novo);
         }
 
         Nota salva;

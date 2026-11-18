@@ -2,6 +2,8 @@ package com.gustavointech.compras.nota;
 
 import java.math.BigDecimal;
 
+import com.gustavointech.compras.produto.Produto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,8 +26,10 @@ public class ItemNota {
     @JoinColumn(name = "nota_id", nullable = false)
     private Nota nota;
 
-    // A coluna produto_id existe na tabela, mas só será mapeada quando a entidade
-    // Produto existir
+    // O produto ao qual este item foi ligado. Vazio = "para revisar" (ADR 0005).
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "produto_id")
+    private Produto produto;
 
     @Column(name = "nome_original", nullable = false, length = 300)
     private String nomeOriginal;
@@ -67,12 +71,22 @@ public class ItemNota {
         this.nota = nota;
     }
 
+    // Usado ao salvar a nota, para ligar sozinho os nomes que o usuário já
+    // confirmou naquela loja
+    public void definirProduto(Produto produto) {
+        this.produto = produto;
+    }
+
     public Long getId() {
         return id;
     }
 
     public Nota getNota() {
         return nota;
+    }
+
+    public Produto getProduto() {
+        return produto;
     }
 
     public String getNomeOriginal() {
