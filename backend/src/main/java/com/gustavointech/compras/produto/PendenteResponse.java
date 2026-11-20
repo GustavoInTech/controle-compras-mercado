@@ -2,7 +2,8 @@ package com.gustavointech.compras.produto;
 
 import java.time.LocalDate;
 
-// Um nome de item, numa loja, que ainda não foi ligado a nenhum produto (uma linha da tela "para revisar")
+// Um nome de item, numa loja, que ainda não foi ligado a nenhum produto (uma linha da tela "para revisar"),
+// já com as sugestões. O sistema sugere, mas nunca aplica sozinho.
 public class PendenteResponse {
 
     private final Long mercadoId;
@@ -12,9 +13,12 @@ public class PendenteResponse {
     private final String unidade;
     private final long ocorrencias;
     private final LocalDate ultimaCompra;
+    private final SugestaoProdutoResponse sugestaoProduto;
+    private final SugestaoCategoriaResponse sugestaoCategoria;
 
     public PendenteResponse(Long mercadoId, String mercado, String nomeNormalizado, String nomeOriginal,
-            String unidade, long ocorrencias, LocalDate ultimaCompra) {
+            String unidade, long ocorrencias, LocalDate ultimaCompra,
+            SugestaoProdutoResponse sugestaoProduto, SugestaoCategoriaResponse sugestaoCategoria) {
         this.mercadoId = mercadoId;
         this.mercado = mercado;
         this.nomeNormalizado = nomeNormalizado;
@@ -22,6 +26,8 @@ public class PendenteResponse {
         this.unidade = unidade;
         this.ocorrencias = ocorrencias;
         this.ultimaCompra = ultimaCompra;
+        this.sugestaoProduto = sugestaoProduto;
+        this.sugestaoCategoria = sugestaoCategoria;
     }
 
     public Long getMercadoId() {
@@ -50,5 +56,15 @@ public class PendenteResponse {
 
     public LocalDate getUltimaCompra() {
         return ultimaCompra;
+    }
+
+    // null quando não há nenhum produto parecido entre os que o usuário já
+    // confirmou
+    public SugestaoProdutoResponse getSugestaoProduto() {
+        return sugestaoProduto;
+    }
+
+    public SugestaoCategoriaResponse getSugestaoCategoria() {
+        return sugestaoCategoria;
     }
 }

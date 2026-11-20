@@ -2,7 +2,9 @@ package com.gustavointech.compras.produto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,10 @@ import com.gustavointech.compras.usuario.UsuarioRepository;
 
 @Service
 public class ProdutoService {
+
+    // A partir daqui o nome é considerado o MESMO (o pg_trgm devolve 1 para nomes
+    // iguais)
+    private static final double SIMILARIDADE_MESMO_NOME = 0.999;
 
     private final ProdutoRepository produtos;
     private final CategoriaRepository categorias;
@@ -42,21 +48,63 @@ public class ProdutoService {
     }
 
     // Os nomes que o usuário ainda precisa revisar (itens sem produto), agrupados
-    // por loja e nome
+    // por loja e nome, com sugestões.
+    // O sistema sugere, mas nunca aplica sozinho (ADR 0005, decisão 4).
     @Transactional(readOnly = true)
     public List<PendenteResponse> pendentes(Long usuarioId) {
+        // As categorias por nome, para transformar a sugestão do dicionário em um id
+        Map<String, Categoria> categoriasPorNome = new HashMap<>();
+        for (Categoria c : categorias.findAllByOrderByNomeAsc()) {
+            categoriasPorNome.put(c.getNome(), c);
+        }
+
         List<PendenteResponse> lista = new ArrayList<>();
         for (Object[] linha : apelidos.listarPendentes(usuarioId)) {
+            String nomeNormalizado = (String) linha[2];
+
+            // Colunas 7 a 11: o produto parecido que o usuário já confirmou (vazias quando
+            // nada é parecido)
+            SugestaoProdutoResponse sugestaoProduto = null;
+            SugestaoCategoriaResponse sugestaoCategoria = null;
+            if (linha[7] != null) {
+                boolean mesmoNome = ((Number) linha[9]).doubleValue() >= SIMILARIDADE_MESMO_NOME;
+                sugestaoProduto = new SugestaoProdutoResponse(
+                        ((Number) linha[7]).longValue(), (String) linha[8], mesmoNome ? "ALTA" : "MEDIA");
+                // O mesmo nome já confirmado em outra loja vale mais que o dicionário
+                if (mesmoNome && linha[10] != null) {
+                    sugestaoCategoria = new SugestaoCategoriaResponse(
+                            ((Number) linha[10]).longValue(), (String) linha[11], "MESMO_NOME");
+                }
+            }
+            if (sugestaoCategoria == null) {
+                sugestaoCategoria = categoriaSugerida(nomeNormalizado, categoriasPorNome);
+            }
+
             lista.add(new PendenteResponse(
                     ((Number) linha[0]).longValue(),
                     (String) linha[1],
-                    (String) linha[2],
+                    nomeNormalizado,
                     (String) linha[3],
                     (String) linha[4],
                     ((Number) linha[5]).longValue(),
-                    LocalDate.parse((String) linha[6])));
+                    LocalDate.parse((String) linha[6]),
+                    sugestaoProduto,
+                    sugestaoCategoria));
         }
         return lista;
+    }
+
+    // Dicionário de palavras; sem pista, a categoria "Outros"
+    private static SugestaoCategoriaResponse categoriaSugerida(String nomeNormalizado,
+            Map<String, Categoria> categoriasPorNome) {
+        Categoria doDicionario = DicionarioCategorias.sugerir(nomeNormalizado)
+                .map(categoriasPorNome::get)
+                .orElse(null);
+        if (doDicionario != null) {
+            return new SugestaoCategoriaResponse(doDicionario.getId(), doDicionario.getNome(), "DICIONARIO");
+        }
+        Categoria outros = categoriasPorNome.get("Outros");
+        return outros == null ? null : new SugestaoCategoriaResponse(outros.getId(), outros.getNome(), "PADRAO");
     }
 
     // Cria o produto e, se vierem mercadoId e nomeNormalizado, já liga esse nome a
