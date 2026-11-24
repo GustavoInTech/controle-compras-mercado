@@ -39,4 +39,34 @@ public interface NotaRepository extends JpaRepository<Nota, Long> {
                         where i.nota.id in :ids group by i.nota.id
                         """)
         List<Object[]> contarItens(@Param("ids") Collection<Long> ids);
+
+        // Os totais de um período [inicio, fim). Devolve UMA linha: [soma do valor a
+        // pagar, soma dos descontos, quantas notas].
+        // Mês sem notas dá 0, 0, 0 (COALESCE troca o "vazio" da soma por zero).
+        @Query(value = """
+                        SELECT COALESCE(SUM(valor_a_pagar), 0), COALESCE(SUM(desconto), 0), COUNT(*)
+                        FROM nota
+                        WHERE usuario_id = :usuarioId AND data_compra >= :inicio AND data_compra < :fim
+                        """, nativeQuery = true)
+        List<Object[]> totaisDoPeriodo(@Param("usuarioId") Long usuarioId,
+                        @Param("inicio") LocalDate inicio,
+                        @Param("fim") LocalDate fim);
+
+        // O valor BRUTO dos itens (antes do desconto) por categoria, da maior para a
+        // menor. Cada linha é:
+        // [id da categoria, nome da categoria, soma]. Item sem produto, ou de produto
+        // sem categoria, vem com id e nome vazios.
+        @Query(value = """
+                        SELECT c.id, c.nome, SUM(i.total)
+                        FROM item_nota i
+                        JOIN nota n ON n.id = i.nota_id
+                        LEFT JOIN produto p ON p.id = i.produto_id
+                        LEFT JOIN categoria c ON c.id = p.categoria_id
+                        WHERE n.usuario_id = :usuarioId AND n.data_compra >= :inicio AND n.data_compra < :fim
+                        GROUP BY c.id, c.nome
+                        ORDER BY SUM(i.total) DESC, c.nome
+                        """, nativeQuery = true)
+        List<Object[]> gastoPorCategoria(@Param("usuarioId") Long usuarioId,
+                        @Param("inicio") LocalDate inicio,
+                        @Param("fim") LocalDate fim);
 }
